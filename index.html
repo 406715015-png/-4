@@ -1,0 +1,593 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>พจนานุกรมมลายู-ไทย 300 คำ</title>
+<style>
+  :root {
+    --bg: #faf7f2;
+    --bg-card: #ffffff;
+    --text: #2b2420;
+    --text-dim: #6b625a;
+    --accent: #c1502e;
+    --accent-2: #1f7a5c;
+    --border: #e6ddd2;
+    --shadow: rgba(43,36,32,0.08);
+    box-sizing: border-box;
+    padding-top: env(safe-area-inset-top, 0px);
+    padding-bottom: env(safe-area-inset-bottom, 0px);
+  }
+  @media (prefers-color-scheme: dark) {
+    :root:not([data-theme="light"]) {
+      --bg: #1b1815;
+      --bg-card: #262220;
+      --text: #f1ece5;
+      --text-dim: #b3a99e;
+      --accent: #e07a52;
+      --accent-2: #4fbf94;
+      --border: #3a342e;
+      --shadow: rgba(0,0,0,0.3);
+    }
+  }
+  :root[data-theme="dark"] {
+    --bg: #1b1815;
+    --bg-card: #262220;
+    --text: #f1ece5;
+    --text-dim: #b3a99e;
+    --accent: #e07a52;
+    --accent-2: #4fbf94;
+    --border: #3a342e;
+    --shadow: rgba(0,0,0,0.3);
+  }
+  html { scroll-padding-top: env(safe-area-inset-top, 0px); }
+  * { box-sizing: border-box; }
+  body {
+    margin: 0;
+    background: var(--bg);
+    color: var(--text);
+    font-family: "Noto Sans Thai", "Sarabun", -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+    -webkit-font-smoothing: antialiased;
+    min-height: 100%;
+  }
+  .wrap {
+    max-width: 880px;
+    margin: 0 auto;
+    padding: 20px 16px 60px;
+  }
+  header {
+    text-align: center;
+    padding: 18px 0 8px;
+  }
+  header h1 {
+    font-size: 1.4rem;
+    margin: 0 0 4px;
+    color: var(--accent);
+  }
+  header p {
+    margin: 0;
+    color: var(--text-dim);
+    font-size: 0.9rem;
+  }
+  .tabs {
+    display: flex;
+    gap: 8px;
+    justify-content: center;
+    margin: 18px 0;
+  }
+  .tab-btn {
+    flex: 1;
+    max-width: 220px;
+    padding: 10px 14px;
+    border-radius: 999px;
+    border: 1px solid var(--border);
+    background: var(--bg-card);
+    color: var(--text);
+    font-size: 0.95rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.15s ease;
+  }
+  .tab-btn.active {
+    background: var(--accent);
+    border-color: var(--accent);
+    color: #fff;
+  }
+  .panel { display: none; }
+  .panel.active { display: block; }
+
+  /* ---- Dictionary ---- */
+  .search-box {
+    position: relative;
+    margin-bottom: 14px;
+  }
+  .search-box input {
+    width: 100%;
+    padding: 13px 16px 13px 42px;
+    border-radius: 14px;
+    border: 1px solid var(--border);
+    background: var(--bg-card);
+    color: var(--text);
+    font-size: 1rem;
+    outline: none;
+  }
+  .search-box input:focus { border-color: var(--accent); }
+  .search-box::before {
+    content: "🔍";
+    position: absolute;
+    left: 14px;
+    top: 50%;
+    transform: translateY(-50%);
+    opacity: 0.6;
+    font-size: 0.95rem;
+  }
+  .count-info {
+    color: var(--text-dim);
+    font-size: 0.82rem;
+    margin: 0 4px 14px;
+  }
+  .word-list {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+  }
+  .word-card {
+    background: var(--bg-card);
+    border: 1px solid var(--border);
+    border-radius: 14px;
+    padding: 14px 16px;
+    box-shadow: 0 1px 3px var(--shadow);
+  }
+  .word-top {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+  .word-no {
+    font-size: 0.72rem;
+    color: var(--text-dim);
+    background: var(--bg);
+    border-radius: 8px;
+    padding: 2px 7px;
+    flex-shrink: 0;
+  }
+  .word-ms {
+    font-weight: 700;
+    font-size: 1.08rem;
+    color: var(--accent);
+    flex: 1;
+  }
+  .speak-btn {
+    border: none;
+    background: var(--bg);
+    color: var(--text);
+    border-radius: 50%;
+    width: 34px;
+    height: 34px;
+    flex-shrink: 0;
+    font-size: 1rem;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: background 0.15s;
+  }
+  .speak-btn:active { background: var(--accent); color: #fff; }
+  .word-th {
+    margin-top: 4px;
+    color: var(--text);
+    font-size: 0.98rem;
+  }
+  .word-sentence {
+    margin-top: 8px;
+    padding-top: 8px;
+    border-top: 1px dashed var(--border);
+    font-size: 0.88rem;
+    color: var(--text-dim);
+    line-height: 1.5;
+  }
+  .word-sentence .ms-line {
+    color: var(--accent-2);
+    font-style: italic;
+  }
+  .empty-state {
+    text-align: center;
+    color: var(--text-dim);
+    padding: 40px 10px;
+  }
+
+  /* ---- Flashcards ---- */
+  .flash-top {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 14px;
+    color: var(--text-dim);
+    font-size: 0.88rem;
+  }
+  .flash-controls { display: flex; gap: 8px; }
+  .icon-btn {
+    border: 1px solid var(--border);
+    background: var(--bg-card);
+    color: var(--text);
+    border-radius: 10px;
+    padding: 7px 12px;
+    font-size: 0.85rem;
+    cursor: pointer;
+  }
+  .flash-stage {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 18px;
+    padding: 10px 0 30px;
+  }
+  .flashcard {
+    width: 100%;
+    max-width: 420px;
+    height: 260px;
+    perspective: 1200px;
+    cursor: pointer;
+  }
+  .flashcard-inner {
+    position: relative;
+    width: 100%;
+    height: 100%;
+    transition: transform 0.5s;
+    transform-style: preserve-3d;
+  }
+  .flashcard.flipped .flashcard-inner {
+    transform: rotateY(180deg);
+  }
+  .flash-face {
+    position: absolute;
+    inset: 0;
+    backface-visibility: hidden;
+    border-radius: 20px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 24px;
+    text-align: center;
+    box-shadow: 0 4px 16px var(--shadow);
+    border: 1px solid var(--border);
+  }
+  .flash-front {
+    background: linear-gradient(160deg, var(--accent), #a5401f);
+    color: #fff;
+  }
+  .flash-back {
+    background: var(--bg-card);
+    color: var(--text);
+    transform: rotateY(180deg);
+  }
+  .flash-face .no-badge {
+    position: absolute;
+    top: 14px;
+    left: 14px;
+    font-size: 0.72rem;
+    opacity: 0.8;
+    background: rgba(255,255,255,0.2);
+    padding: 2px 9px;
+    border-radius: 8px;
+  }
+  .flash-back .no-badge {
+    background: var(--bg);
+    color: var(--text-dim);
+  }
+  .flash-word {
+    font-size: 1.7rem;
+    font-weight: 800;
+    margin-bottom: 8px;
+  }
+  .flash-hint {
+    font-size: 0.82rem;
+    opacity: 0.85;
+    margin-top: 10px;
+  }
+  .flash-th {
+    font-size: 1.3rem;
+    font-weight: 700;
+    color: var(--accent);
+    margin-bottom: 12px;
+  }
+  .flash-sentence {
+    font-size: 0.88rem;
+    color: var(--text-dim);
+    line-height: 1.5;
+  }
+  .flash-sentence .ms-line {
+    color: var(--accent-2);
+    font-style: italic;
+    display: block;
+    margin-bottom: 4px;
+  }
+  .flash-speak {
+    position: absolute;
+    bottom: 12px;
+    right: 12px;
+    border: none;
+    background: rgba(0,0,0,0.12);
+    color: inherit;
+    border-radius: 50%;
+    width: 34px;
+    height: 34px;
+    font-size: 1rem;
+    cursor: pointer;
+  }
+  .flash-back .flash-speak {
+    background: var(--bg);
+  }
+  .nav-row {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+  }
+  .nav-btn {
+    border: none;
+    background: var(--accent);
+    color: #fff;
+    width: 46px;
+    height: 46px;
+    border-radius: 50%;
+    font-size: 1.2rem;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+  .nav-btn:disabled { opacity: 0.35; }
+  .progress-text {
+    font-size: 0.9rem;
+    color: var(--text-dim);
+    min-width: 64px;
+    text-align: center;
+  }
+  .flip-hint {
+    color: var(--text-dim);
+    font-size: 0.8rem;
+    text-align: center;
+  }
+  footer {
+    text-align: center;
+    color: var(--text-dim);
+    font-size: 0.76rem;
+    margin-top: 30px;
+    padding-bottom: env(safe-area-inset-bottom, 10px);
+  }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header>
+    <h1>คำศัพท์การสื่อสารภาษามลายู-ไทย</h1>
+    <p>300 คำศัพท์ พร้อมเสียงอ่านและประโยคตัวอย่าง</p>
+  </header>
+
+  <div class="group-info">
+    <div class="group-title">กลุ่มที่ 4</div>
+    <ul class="group-members">
+      <li><span class="mid">406715002</span> นางสาวมูรอายู มะแซ</li>
+      <li><span class="mid">406715003</span> นางสาวกอมารีซะห์ กาแลจิ</li>
+      <li><span class="mid">406715004</span> นางสาวฮันนาน เจาะกลาดี</li>
+      <li><span class="mid">406715015</span> แวนูรูฮุซนา แวสาและ</li>
+      <li><span class="mid">406715016</span> ฮุสนา ตอเละ</li>
+      <li><span class="mid">406715028</span> นางสาวนาตาซา เจะเละ</li>
+    </ul>
+    <div class="group-course">หลักสูตรครุศาสตรบัณฑิต สาขาวิชาการสอนภาษามลายู</div>
+    <div class="group-faculty">คณะมนุษยศาสตร์และสังคมศาสตร์</div>
+  </div>
+
+  <div class="tabs">
+    <button class="tab-btn active" data-tab="dict">📖 พจนานุกรม</button>
+    <button class="tab-btn" data-tab="flash">🎴 แฟลชการ์ด</button>
+  </div>
+
+  <div id="dict" class="panel active">
+    <div class="search-box">
+      <input type="text" id="searchInput" placeholder="ค้นหาคำศัพท์ (มลายู หรือ ไทย)...">
+    </div>
+    <p class="count-info" id="countInfo"></p>
+    <div class="word-list" id="wordList"></div>
+    <div class="empty-state" id="emptyState" style="display:none;">ไม่พบคำศัพท์ที่ค้นหา</div>
+  </div>
+
+  <div id="flash" class="panel">
+    <div class="flash-top">
+      <span id="flashInfo">แฟลชการ์ด 50 คำ</span>
+      <div class="flash-controls">
+        <button class="icon-btn" id="shuffleBtn">🔀 สุ่ม</button>
+      </div>
+    </div>
+    <div class="flash-stage">
+      <div class="flashcard" id="flashcard">
+        <div class="flashcard-inner">
+          <div class="flash-face flash-front">
+            <span class="no-badge" id="fcNoFront"></span>
+            <div class="flash-word" id="fcMs"></div>
+            <div class="flash-hint">แตะเพื่อดูคำแปล</div>
+            <button class="flash-speak" id="fcSpeakFront" title="ฟังเสียง">🔊</button>
+          </div>
+          <div class="flash-face flash-back">
+            <span class="no-badge" id="fcNoBack"></span>
+            <div class="flash-th" id="fcTh"></div>
+            <div class="flash-sentence">
+              <span class="ms-line" id="fcSentMs"></span>
+              <span id="fcSentTh"></span>
+            </div>
+            <button class="flash-speak" id="fcSpeakBack" title="ฟังเสียง">🔊</button>
+          </div>
+        </div>
+      </div>
+      <div class="nav-row">
+        <button class="nav-btn" id="prevBtn">‹</button>
+        <span class="progress-text" id="progressText">1 / 50</span>
+        <button class="nav-btn" id="nextBtn">›</button>
+      </div>
+      <div class="flip-hint">แตะที่การ์ดเพื่อพลิกดูคำตอบ</div>
+    </div>
+  </div>
+
+  <footer>สร้างจากฐานข้อมูลคำศัพท์การสื่อสารภาษามลายู 300 คำ</footer>
+</div>
+
+<script>
+const WORDS = [{"no": "1", "ms": "Selamat", "th": "สวัสดี/ปลอดภัย", "sentence_ms": "Selamat pagi.", "sentence_th": "สวัสดีตอนเช้า"}, {"no": "2", "ms": "Hai", "th": "สวัสดี", "sentence_ms": "Hai, apa khabar?", "sentence_th": "สวัสดีสบายดีไหม?"}, {"no": "3", "ms": "Salam", "th": "การทักทาย", "sentence_ms": "Saya memberi salam kepada guru.", "sentence_th": "ฉันกล่าวทักทายคุณครู"}, {"no": "4", "ms": "Terima kasih", "th": "ขอบคุณ", "sentence_ms": "Terima kasih atas bantuan awak.", "sentence_th": "ขอบคุณสำหรับความช่วยเหลือของคุณ"}, {"no": "5", "ms": "Sama-sama", "th": "ไม่เป็นไร/ด้วยความยินดี", "sentence_ms": "Sama-sama, jangan risau.", "sentence_th": "ด้วยความยินดี ไม่ต้องกังวลนะ"}, {"no": "6", "ms": "Maaf", "th": "ขอโทษ", "sentence_ms": "Maaf, saya terlambat.", "sentence_th": "ขอโทษที ฉันมาสาย"}, {"no": "7", "ms": "Tolong", "th": "กรุณา/ช่วย", "sentence_ms": "Tolong tunggu saya.", "sentence_th": "โปรดรอฉันด้วย"}, {"no": "8", "ms": "Sila", "th": "เชิญ/กรุณา", "sentence_ms": "Sila duduk di sini.", "sentence_th": "เชิญนั่งตรงนี้ครับ/ค่ะ"}, {"no": "9", "ms": "Ya", "th": "ใช่", "sentence_ms": "Ya, saya faham.", "sentence_th": "ใช่ ฉันเข้าใจแล้ว"}, {"no": "10", "ms": "Tidak", "th": "ไม่/ไม่ใช่", "sentence_ms": "Tidak, saya tidak tahu.", "sentence_th": "ไม่ ฉันไม่รู้"}, {"no": "11", "ms": "Boleh", "th": "ได้/สามารถ", "sentence_ms": "Boleh saya masuk?", "sentence_th": "ขออนุญาตเข้าไปได้ไหม?"}, {"no": "12", "ms": "Jangan", "th": "อย่า", "sentence_ms": "Jangan bising di dalam kelas.", "sentence_th": "อย่าส่งเสียงดังในห้องเรียน"}, {"no": "13", "ms": "Baik", "th": "ดี/ตกลง", "sentence_ms": "Baik, saya akan datang.", "sentence_th": "ตกลง ฉันจะไป"}, {"no": "14", "ms": "Betul", "th": "ถูกต้อง", "sentence_ms": "Jawapan awak betul.", "sentence_th": "คำตอบของคุณถูกต้อง"}, {"no": "15", "ms": "Salah", "th": "ผิด", "sentence_ms": "Jawapan ini salah.", "sentence_th": "คำตอบนี้ผิด"}, {"no": "16", "ms": "Faham", "th": "เข้าใจ", "sentence_ms": "Saya faham apa yang awak cakap.", "sentence_th": "ฉันเข้าใจสิ่งที่เธอพูด"}, {"no": "17", "ms": "Tahu", "th": "รู้", "sentence_ms": "Saya tahu tempat itu.", "sentence_th": "ฉันรู้จักสถานที่นั้น"}, {"no": "18", "ms": "Kenal", "th": "รู้จัก", "sentence_ms": "Saya kenal dia.", "sentence_th": "ฉันรู้จักเขา"}, {"no": "19", "ms": "Tunggu", "th": "รอ", "sentence_ms": "Tunggu saya sebentar.", "sentence_th": "รอฉันสักครู่"}, {"no": "20", "ms": "Datang", "th": "มา", "sentence_ms": "Datanglah ke rumah saya.", "sentence_th": "มาที่บ้านฉันสิ"}, {"no": "21", "ms": "Pergi", "th": "ไป", "sentence_ms": "Saya pergi ke universiti.", "sentence_th": "ฉันไปมหาวิทยาลัย"}, {"no": "22", "ms": "Balik", "th": "กลับ", "sentence_ms": "Saya balik ke rumah petang ini.", "sentence_th": "เย็นนี้ฉันจะกลับบ้าน"}, {"no": "23", "ms": "Jumpa", "th": "พบ/เจอ", "sentence_ms": "Kita jumpa esok.", "sentence_th": "พรุ่งนี้เราเจอกัน"}, {"no": "24", "ms": "Cakap", "th": "พูด", "sentence_ms": "Tolong cakap perlahan sedikit.", "sentence_th": "กรุณาพูดช้าลงหน่อย"}, {"no": "25", "ms": "Dengar", "th": "ฟัง", "sentence_ms": "Dengar apa yang saya katakan.", "sentence_th": "ฟังสิ่งที่ฉันพูดนะ"}, {"no": "26", "ms": "Tanya", "th": "ถาม", "sentence_ms": "Saya mahu tanya sesuatu.", "sentence_th": "ฉันอยากจะถามอะไรหน่อย"}, {"no": "27", "ms": "Jawab", "th": "ตอบ", "sentence_ms": "Sila jawab soalan ini.", "sentence_th": "โปรดตอบคำถามนี้"}, {"no": "28", "ms": "Baca", "th": "อ่าน", "sentence_ms": "Saya suka baca buku.", "sentence_th": "ฉันชอบอ่านหนังสือ"}, {"no": "29", "ms": "Tulis", "th": "เขียน", "sentence_ms": "Tolong tulis nama awak.", "sentence_th": "กรุณาเขียนชื่อของคุณ"}, {"no": "30", "ms": "Lihat", "th": "ดู/มอง", "sentence_ms": "Lihat gambar ini.", "sentence_th": "มองดูรูปนี้สิ"}, {"no": "31", "ms": "Saya", "th": "ฉัน/ผม", "sentence_ms": "Saya pelajar universiti.", "sentence_th": "ฉันเป็นนักศึกษามหาวิทยาลัย"}, {"no": "32", "ms": "Awak", "th": "คุณ/เธอ", "sentence_ms": "Awak tinggal di mana?", "sentence_th": "คุณอาศัยอยู่ที่ไหน?"}, {"no": "33", "ms": "Dia", "th": "เขา/เธอ", "sentence_ms": "Dia kawan saya.", "sentence_th": "เขาเป็นเพื่อนของฉัน"}, {"no": "34", "ms": "Kami", "th": "พวกเรา (ไม่รวมผู้ฟัง)", "sentence_ms": "Kami belajar bersama.", "sentence_th": "พวกเราเรียนด้วยกัน"}, {"no": "35", "ms": "Kita", "th": "พวกเรา (รวมผู้ฟัง)", "sentence_ms": "Kita pergi bersama-sama.", "sentence_th": "พวกเราไปด้วยกันนะ"}, {"no": "36", "ms": "Mereka", "th": "พวกเขา", "sentence_ms": "Mereka sedang belajar.", "sentence_th": "พวกเขากำลังเรียนอยู่"}, {"no": "37", "ms": "Orang", "th": "คน", "sentence_ms": "Orang itu guru saya.", "sentence_th": "คนนั้นคือครูของฉัน"}, {"no": "38", "ms": "Lelaki", "th": "ผู้ชาย", "sentence_ms": "Lelaki itu ayah saya.", "sentence_th": "ผู้ชายคนนั้นคือพ่อของฉัน"}, {"no": "39", "ms": "Perempuan", "th": "ผู้หญิง", "sentence_ms": "Perempuan itu kakak saya.", "sentence_th": "ผู้หญิงคนนั้นคือพี่สาวของฉัน"}, {"no": "40", "ms": "Kanak-kanak", "th": "เด็ก", "sentence_ms": "Kanak-kanak itu sedang bermain.", "sentence_th": "เด็กคนนั้นกำลังเล่นอยู่"}, {"no": "41", "ms": "Kawan", "th": "เพื่อน", "sentence_ms": "Ali ialah kawan saya.", "sentence_th": "อาลีเป็นเพื่อนของฉัน"}, {"no": "42", "ms": "Rakan", "th": "เพื่อน/เพื่อนร่วมงาน", "sentence_ms": "Dia rakan sekelas saya.", "sentence_th": "เขาเป็นเพื่อนร่วมชั้นของฉัน"}, {"no": "43", "ms": "Guru", "th": "ครู", "sentence_ms": "Guru sedang mengajar.", "sentence_th": "คุณครูกำลังสอนอยู่"}, {"no": "44", "ms": "Pelajar", "th": "นักเรียน/นักศึกษา", "sentence_ms": "Saya seorang pelajar.", "sentence_th": "ฉันเป็นนักเรียน/นักศึกษา"}, {"no": "45", "ms": "Ibu", "th": "แม่", "sentence_ms": "Ibu sedang memasak.", "sentence_th": "แม่กำลังทำอาหารอยู่"}, {"no": "46", "ms": "Bapa", "th": "พ่อ", "sentence_ms": "Bapa pergi bekerja.", "sentence_th": "พ่อไปทำงาน"}, {"no": "47", "ms": "Ayah", "th": "พ่อ", "sentence_ms": "Ayah membaca surat khabar.", "sentence_th": "พ่อกำลังอ่านหนังสือพิมพ์"}, {"no": "48", "ms": "Emak", "th": "แม่", "sentence_ms": "Emak membeli sayur.", "sentence_th": "แม่ซื้อผัก"}, {"no": "49", "ms": "Abang", "th": "พี่ชาย", "sentence_ms": "Abang saya belajar di universiti.", "sentence_th": "พี่ชายของฉันเรียนอยู่ที่มหาวิทยาลัย"}, {"no": "50", "ms": "Kakak", "th": "พี่สาว", "sentence_ms": "Kakak sedang membaca buku.", "sentence_th": "พี่สาวกำลังอ่านหนังสือ"}, {"no": "51", "ms": "Adik", "th": "น้อง", "sentence_ms": "Adik saya masih kecil.", "sentence_th": "น้องของฉันยังเด็กอยู่"}, {"no": "52", "ms": "Datuk", "th": "ปู่/ตา", "sentence_ms": "Datuk tinggal di kampung.", "sentence_th": "คุณปู่/คุณตา อาศัยอยู่ในหมู่บ้าน"}, {"no": "53", "ms": "Nenek", "th": "ย่า/ยาย", "sentence_ms": "Nenek memasak nasi.", "sentence_th": "คุณย่า/คุณยาย หุงข้าว"}, {"no": "54", "ms": "Anak", "th": "ลูก", "sentence_ms": "Mereka mempunyai dua orang anak.", "sentence_th": "พวกเขามีลูกสองคน"}, {"no": "55", "ms": "Suami", "th": "สามี", "sentence_ms": "Suaminya bekerja di sekolah.", "sentence_th": "สามีของเธอทำงานที่โรงเรียน"}, {"no": "56", "ms": "Isteri", "th": "ภรรยา", "sentence_ms": "Isterinya seorang guru.", "sentence_th": "ภรรยาของเขาเป็นครู"}, {"no": "57", "ms": "Keluarga", "th": "ครอบครัว", "sentence_ms": "Saya sayang keluarga saya.", "sentence_th": "ฉันรักครอบครัวของฉัน"}, {"no": "58", "ms": "Saudara", "th": "ญาติ/พี่น้อง", "sentence_ms": "Saudara saya datang berkunjung.", "sentence_th": "ญาติของฉันมาเยี่ยม"}, {"no": "59", "ms": "Jiran", "th": "เพื่อนบ้าน", "sentence_ms": "Jiran saya sangat baik.", "sentence_th": "เพื่อนบ้านของฉันใจดีมาก"}, {"no": "60", "ms": "Tetamu", "th": "แขก", "sentence_ms": "Tetamu sudah sampai.", "sentence_th": "แขกมาถึงแล้ว"}, {"no": "61", "ms": "Rumah", "th": "บ้าน", "sentence_ms": "Saya tinggal di rumah ini.", "sentence_th": "ฉันอาศัยอยู่ในบ้านหลังนี้"}, {"no": "62", "ms": "Bilik", "th": "ห้อง", "sentence_ms": "Bilik saya bersih.", "sentence_th": "ห้องของฉันสะอาด"}, {"no": "63", "ms": "Dapur", "th": "ห้องครัว", "sentence_ms": "Ibu berada di dapur.", "sentence_th": "แม่อยู่ในห้องครัว"}, {"no": "64", "ms": "Bilik air", "th": "ห้องน้ำ", "sentence_ms": "Bilik air ada di sebelah.", "sentence_th": "ห้องน้ำอยู่ข้างๆ"}, {"no": "65", "ms": "Sekolah", "th": "โรงเรียน", "sentence_ms": "Adik pergi ke sekolah.", "sentence_th": "น้องไปโรงเรียน"}, {"no": "66", "ms": "Universiti", "th": "มหาวิทยาลัย", "sentence_ms": "Saya belajar di universiti.", "sentence_th": "ฉันเรียนที่มหาวิทยาลัย"}, {"no": "67", "ms": "Kelas", "th": "ห้องเรียน/ชั้นเรียน", "sentence_ms": "Kelas bermula pada pukul lapan.", "sentence_th": "คาบเรียนเริ่มเวลาแปดโมง"}, {"no": "68", "ms": "Perpustakaan", "th": "ห้องสมุด", "sentence_ms": "Saya membaca di perpustakaan.", "sentence_th": "ฉันอ่านหนังสือในห้องสมุด"}, {"no": "69", "ms": "Kedai", "th": "ร้านค้า", "sentence_ms": "Saya pergi ke kedai.", "sentence_th": "ฉันไปร้านค้า"}, {"no": "70", "ms": "Pasar", "th": "ตลาด", "sentence_ms": "Ibu membeli ikan di pasar.", "sentence_th": "แม่ซื้อปลาที่ตลาด"}, {"no": "71", "ms": "Masjid", "th": "มัสยิด", "sentence_ms": "Kami pergi ke masjid.", "sentence_th": "พวกเราไปมัสยิด"}, {"no": "72", "ms": "Hospital", "th": "โรงพยาบาล", "sentence_ms": "Dia pergi ke hospital.", "sentence_th": "เขาไปโรงพยาบาล"}, {"no": "73", "ms": "Klinik", "th": "คลินิก", "sentence_ms": "Saya pergi ke klinik.", "sentence_th": "ฉันไปคลินิก"}, {"no": "74", "ms": "Bank", "th": "ธนาคาร", "sentence_ms": "Bank itu dekat dengan rumah saya.", "sentence_th": "ธนาคารนั้นอยู่ใกล้บ้านฉัน"}, {"no": "75", "ms": "Pejabat", "th": "สำนักงาน", "sentence_ms": "Ayah bekerja di pejabat.", "sentence_th": "พ่อทำงานที่สำนักงาน/ออฟฟิศ"}, {"no": "76", "ms": "Restoran", "th": "ร้านอาหาร", "sentence_ms": "Kami makan di restoran.", "sentence_th": "พวกเราทานอาหารที่ร้านอาหาร"}, {"no": "77", "ms": "Jalan", "th": "ถนน", "sentence_ms": "Jalan ini sangat sibuk.", "sentence_th": "ถนนเส้นนี้การจราจรหนาแน่นมาก"}, {"no": "78", "ms": "Taman", "th": "สวน", "sentence_ms": "Kanak-kanak bermain di taman.", "sentence_th": "เด็กๆ เล่นกันอยู่ในสวน"}, {"no": "79", "ms": "Pantai", "th": "ชายหาด", "sentence_ms": "Kami berjalan di pantai.", "sentence_th": "พวกเราเดินเล่นที่ชายหาด"}, {"no": "80", "ms": "Kampung", "th": "หมู่บ้าน/ชนบท", "sentence_ms": "Nenek tinggal di kampung.", "sentence_th": "คุณยายอาศัยอยู่ในหมู่บ้านต่างจังหวัด"}, {"no": "81", "ms": "Bandar", "th": "เมือง", "sentence_ms": "Saya tinggal di bandar.", "sentence_th": "ฉันอาศัยอยู่ในเมือง"}, {"no": "82", "ms": "Stesen", "th": "สถานี", "sentence_ms": "Saya menunggu di stesen.", "sentence_th": "ฉันรออยู่ที่สถานี"}, {"no": "83", "ms": "Lapangan terbang", "th": "สนามบิน", "sentence_ms": "Kami tiba di lapangan terbang.", "sentence_th": "พวกเรามาถึงสนามบินแล้ว"}, {"no": "84", "ms": "Bas", "th": "รถโดยสาร", "sentence_ms": "Saya naik bas ke sekolah.", "sentence_th": "ฉันนั่งรถประจำทางไปโรงเรียน"}, {"no": "85", "ms": "Kereta", "th": "รถยนต์", "sentence_ms": "Ayah memandu kereta.", "sentence_th": "พ่อขับรถยนต์"}, {"no": "86", "ms": "Motosikal", "th": "รถจักรยานยนต์", "sentence_ms": "Abang pergi dengan motosikal.", "sentence_th": "พี่ชายไปโดยรถจักรยานยนต์"}, {"no": "87", "ms": "Basikal", "th": "จักรยาน", "sentence_ms": "Saya pergi dengan basikal.", "sentence_th": "ฉันไปโดยจักรยาน"}, {"no": "88", "ms": "Teksi", "th": "แท็กซี่", "sentence_ms": "Kami naik teksi.", "sentence_th": "พวกเรานั่งรถแท็กซี่"}, {"no": "89", "ms": "Kereta api", "th": "รถไฟ", "sentence_ms": "Saya naik kereta api pagi tadi.", "sentence_th": "ฉันนั่งรถไฟเมื่อเช้านี้"}, {"no": "90", "ms": "Kapal terbang", "th": "เครื่องบิน", "sentence_ms": "Mereka menaiki kapal terbang.", "sentence_th": "พวกเขานั่งเครื่องบิน"}, {"no": "91", "ms": "Hari", "th": "วัน", "sentence_ms": "Hari ini hari Isnin.", "sentence_th": "วันนี้คือวันจันทร์"}, {"no": "92", "ms": "Pagi", "th": "ตอนเช้า", "sentence_ms": "Saya bangun pada waktu pagi.", "sentence_th": "ฉันตื่นนอนในตอนเช้า"}, {"no": "93", "ms": "Tengah hari", "th": "ตอนเที่ยง", "sentence_ms": "Kami makan pada tengah hari.", "sentence_th": "พวกเราทานอาหารตอนเที่ยง"}, {"no": "94", "ms": "Petang", "th": "ตอนบ่าย/เย็น", "sentence_ms": "Saya bersenam pada waktu petang.", "sentence_th": "ฉันออกกำลังกายตอนเย็น"}, {"no": "95", "ms": "Malam", "th": "กลางคืน", "sentence_ms": "Saya belajar pada waktu malam.", "sentence_th": "ฉันเรียน/อ่านหนังสือตอนกลางคืน"}, {"no": "96", "ms": "Sekarang", "th": "ตอนนี้", "sentence_ms": "Saya sedang belajar sekarang.", "sentence_th": "ตอนนี้ฉันกำลังเรียนอยู่"}, {"no": "97", "ms": "Nanti", "th": "เดี๋ยว/ภายหลัง", "sentence_ms": "Saya datang nanti.", "sentence_th": "เดี๋ยวฉันไป"}, {"no": "98", "ms": "Esok", "th": "พรุ่งนี้", "sentence_ms": "Kita jumpa esok.", "sentence_th": "พรุ่งนี้พวกเราเจอกัน"}, {"no": "99", "ms": "Semalam", "th": "เมื่อวาน", "sentence_ms": "Saya pergi ke pasar semalam.", "sentence_th": "เมื่อวานฉันไปตลาด"}, {"no": "100", "ms": "Hari ini", "th": "วันนี้", "sentence_ms": "Hari ini saya tidak ada kelas.", "sentence_th": "วันนี้ฉันไม่มีเรียน"}, {"no": "101", "ms": "Minggu", "th": "สัปดาห์", "sentence_ms": "Saya ada kelas minggu ini.", "sentence_th": "สัปดาห์นี้ฉันมีเรียน"}, {"no": "102", "ms": "Bulan", "th": "เดือน", "sentence_ms": "Bulan depan saya bercuti.", "sentence_th": "เดือนหน้าฉันจะไปพักร้อน/ลาหยุด"}, {"no": "103", "ms": "Tahun", "th": "ปี", "sentence_ms": "Tahun ini saya belajar di universiti.", "sentence_th": "ปีนี้ฉันเรียนอยู่ที่มหาวิทยาลัย"}, {"no": "104", "ms": "Masa", "th": "เวลา", "sentence_ms": "Saya tidak mempunyai banyak masa.", "sentence_th": "ฉันไม่มีเวลามากนัก"}, {"no": "105", "ms": "Jam", "th": "ชั่วโมง/นาฬิกา", "sentence_ms": "Kelas bermula pada jam lapan.", "sentence_th": "คาบเรียนเริ่มตอนแปดโมงเช้า"}, {"no": "106", "ms": "Minit", "th": "นาที", "sentence_ms": "Tunggu lima minit.", "sentence_th": "รอ 5 นาที"}, {"no": "107", "ms": "Awal", "th": "เร็ว/แต่เช้า", "sentence_ms": "Saya datang awal ke kelas.", "sentence_th": "ฉันมาเข้าเรียนแต่เช้า/ก่อนเวลา"}, {"no": "108", "ms": "Lambat", "th": "ช้า/สาย", "sentence_ms": "Dia datang lambat.", "sentence_th": "เขามาสาย"}, {"no": "109", "ms": "Bangun", "th": "ตื่น/ลุกขึ้น", "sentence_ms": "Saya bangun pada pukul enam.", "sentence_th": "ฉันตื่นนอนตอนหกโมง"}, {"no": "110", "ms": "Mandi", "th": "อาบน้ำ", "sentence_ms": "Saya mandi pada waktu pagi.", "sentence_th": "ฉันอาบน้ำในตอนเช้า"}, {"no": "111", "ms": "Makan", "th": "กิน", "sentence_ms": "Saya makan nasi.", "sentence_th": "ฉันกินข้าว"}, {"no": "112", "ms": "Minum", "th": "ดื่ม", "sentence_ms": "Saya minum air.", "sentence_th": "ฉันดื่มน้ำ"}, {"no": "113", "ms": "Tidur", "th": "นอน", "sentence_ms": "Saya tidur pada pukul sepuluh.", "sentence_th": "ฉันนอนตอนสี่ทุ่ม (สิบโมงคืน)"}, {"no": "114", "ms": "Belajar", "th": "เรียน", "sentence_ms": "Saya belajar bahasa Melayu.", "sentence_th": "ฉันเรียนภาษามลายู"}, {"no": "115", "ms": "Bekerja", "th": "ทำงาน", "sentence_ms": "Ayah bekerja setiap hari.", "sentence_th": "พ่อทำงานทุกวัน"}, {"no": "116", "ms": "Berehat", "th": "พักผ่อน", "sentence_ms": "Saya berehat selepas belajar.", "sentence_th": "ฉันพักผ่อนหลังจากเรียนเสร็จ"}, {"no": "117", "ms": "Bermain", "th": "เล่น", "sentence_ms": "Adik suka bermain bola.", "sentence_th": "น้องชอบเล่นฟุตบอล"}, {"no": "118", "ms": "Membaca", "th": "อ่าน", "sentence_ms": "Saya membaca buku.", "sentence_th": "ฉันอ่านหนังสือ"}, {"no": "119", "ms": "Menulis", "th": "เขียน", "sentence_ms": "Dia sedang menulis surat.", "sentence_th": "เขากำลังเขียนจดหมาย"}, {"no": "120", "ms": "Berjalan", "th": "เดิน", "sentence_ms": "Saya berjalan ke kelas.", "sentence_th": "ฉันเดินไปห้องเรียน"}, {"no": "121", "ms": "Nasi", "th": "ข้าว", "sentence_ms": "Saya makan nasi.", "sentence_th": "ฉันกินข้าว"}, {"no": "122", "ms": "Nasi goreng", "th": "ข้าวผัด", "sentence_ms": "Saya suka nasi goreng.", "sentence_th": "ฉันชอบข้าวผัด"}, {"no": "123", "ms": "Mi", "th": "บะหมี่/เส้น", "sentence_ms": "Saya makan mi pada waktu malam.", "sentence_th": "ฉันกินบะหมี่ตอนกลางคืน"}, {"no": "124", "ms": "Roti", "th": "ขนมปัง", "sentence_ms": "Saya makan roti untuk sarapan.", "sentence_th": "ฉันกินขนมปังเป็นอาหารเช้า"}, {"no": "125", "ms": "Ayam", "th": "ไก่", "sentence_ms": "Saya suka ayam goreng.", "sentence_th": "ฉันชอบไก่ทอด"}, {"no": "126", "ms": "Daging", "th": "เนื้อ", "sentence_ms": "Dia tidak makan daging.", "sentence_th": "เขาไม่ทานเนื้อสัตว์/เนื้อวัว"}, {"no": "127", "ms": "Ikan", "th": "ปลา", "sentence_ms": "Ikan ini sangat segar.", "sentence_th": "ปลาตัวนี้สดมาก"}, {"no": "128", "ms": "Udang", "th": "กุ้ง", "sentence_ms": "Ibu memasak udang.", "sentence_th": "แม่ปรุงอาหารเมนูกุ้ง"}, {"no": "129", "ms": "Sotong", "th": "ปลาหมึก", "sentence_ms": "Saya suka sotong goreng.", "sentence_th": "ฉันชอบหมึกทอด"}, {"no": "130", "ms": "Telur", "th": "ไข่", "sentence_ms": "Saya makan telur setiap pagi.", "sentence_th": "ฉันทานไข่ทุกเช้า"}, {"no": "131", "ms": "Sayur", "th": "ผัก", "sentence_ms": "Saya suka makan sayur.", "sentence_th": "ฉันชอบทานผัก"}, {"no": "132", "ms": "Buah", "th": "ผลไม้", "sentence_ms": "Buah ini manis.", "sentence_th": "ผลไม้นี้หวาน"}, {"no": "133", "ms": "Pisang", "th": "กล้วย", "sentence_ms": "Saya makan pisang.", "sentence_th": "ฉันกินกล้วย"}, {"no": "134", "ms": "Epal", "th": "แอปเปิล", "sentence_ms": "Saya membeli sebiji epal.", "sentence_th": "ฉันซื้อแอปเปิลหนึ่งผล"}, {"no": "135", "ms": "Oren", "th": "ส้ม", "sentence_ms": "Oren ini manis.", "sentence_th": "ส้มลูกนี้หวาน"}, {"no": "136", "ms": "Tembikai", "th": "แตงโม", "sentence_ms": "Kami makan tembikai.", "sentence_th": "พวกเราทานแตงโม"}, {"no": "137", "ms": "Mangga", "th": "มะม่วง", "sentence_ms": "Mangga itu masam.", "sentence_th": "มะม่วงลูกนั้นเปรี้ยว"}, {"no": "138", "ms": "Sup", "th": "ซุป", "sentence_ms": "Ibu memasak sup ayam.", "sentence_th": "แม่ทำซุปไก่"}, {"no": "139", "ms": "Kuih", "th": "ขนม", "sentence_ms": "Saya membeli kuih di pasar.", "sentence_th": "ฉันซื้อขนมที่ตลาด"}, {"no": "140", "ms": "Gula", "th": "น้ำตาล", "sentence_ms": "Jangan letak terlalu banyak gula.", "sentence_th": "ใส่น้ำตาลอย่าเยอะเกินไปนะ"}, {"no": "141", "ms": "Garam", "th": "เกลือ", "sentence_ms": "Tolong tambah sedikit garam.", "sentence_th": "ช่วยเพิ่มเกลืออีกนิดหน่อย"}, {"no": "142", "ms": "Air", "th": "น้ำ", "sentence_ms": "Saya mahu minum air.", "sentence_th": "ฉันอยากดื่มน้ำ"}, {"no": "143", "ms": "Susu", "th": "นม", "sentence_ms": "Adik minum susu.", "sentence_th": "น้องดื่มนม"}, {"no": "144", "ms": "Kopi", "th": "กาแฟ", "sentence_ms": "Ayah minum kopi.", "sentence_th": "พ่อดื่มกาแฟ"}, {"no": "145", "ms": "Teh", "th": "ชา", "sentence_ms": "Saya suka minum teh.", "sentence_th": "ฉันชอบดื่มชา"}, {"no": "146", "ms": "Jus", "th": "น้ำผลไม้", "sentence_ms": "Saya pesan jus oren.", "sentence_th": "ฉันสั่งน้ำส้ม"}, {"no": "147", "ms": "Ais", "th": "น้ำแข็ง", "sentence_ms": "Tolong tambah ais.", "sentence_th": "ช่วยใส่น้ำแข็งเพิ่มหน่อย"}, {"no": "148", "ms": "Pedas", "th": "เผ็ด", "sentence_ms": "Makanan ini sangat pedas.", "sentence_th": "อาหารนี้เผ็ดมาก"}, {"no": "149", "ms": "Manis", "th": "หวาน", "sentence_ms": "Kek ini terlalu manis.", "sentence_th": "เค้กชิ้นนี้หวานเกินไป"}, {"no": "150", "ms": "Sedap", "th": "อร่อย", "sentence_ms": "Masakan ibu sangat sedap.", "sentence_th": "อาหารฝีมือแม่อร่อยมาก"}, {"no": "151", "ms": "Beli", "th": "ซื้อ", "sentence_ms": "Saya mahu beli baju.", "sentence_th": "ฉันอยากซื้อเสื้อ"}, {"no": "152", "ms": "Jual", "th": "ขาย", "sentence_ms": "Kedai itu menjual makanan.", "sentence_th": "ร้านนั้นขายอาหาร"}, {"no": "153", "ms": "Harga", "th": "ราคา", "sentence_ms": "Berapa harga baju ini?", "sentence_th": "เสื้อตัวนี้ราคาเท่าไหร่?"}, {"no": "154", "ms": "Wang", "th": "เงิน", "sentence_ms": "Saya tidak membawa wang.", "sentence_th": "ฉันไม่ได้นำเงินมา"}, {"no": "155", "ms": "Duit", "th": "เงิน", "sentence_ms": "Saya ada duit yang cukup.", "sentence_th": "ฉันมีเงินพอ"}, {"no": "156", "ms": "Mahal", "th": "แพง", "sentence_ms": "Harga kasut ini mahal.", "sentence_th": "ราคารองเท้าคู่นี้แพง"}, {"no": "157", "ms": "Murah", "th": "ถูก", "sentence_ms": "Baju ini murah.", "sentence_th": "เสื้อตัวนี้ราคาถูก"}, {"no": "158", "ms": "Diskaun", "th": "ส่วนลด", "sentence_ms": "Ada diskaun untuk barang ini?", "sentence_th": "สินค้านี้มีส่วนลดไหม?"}, {"no": "159", "ms": "Pasar raya", "th": "ซูเปอร์มาร์เก็ต", "sentence_ms": "Ibu pergi ke pasar raya.", "sentence_th": "แม่ไปซูเปอร์มาร์เก็ต"}, {"no": "160", "ms": "Barang", "th": "สิ่งของ/สินค้า", "sentence_ms": "Barang ini sudah habis.", "sentence_th": "สินค้านี้หมดแล้ว"}, {"no": "161", "ms": "Baju", "th": "เสื้อผ้า", "sentence_ms": "Saya membeli baju baharu.", "sentence_th": "ฉันซื้อเสื้อใหม่"}, {"no": "162", "ms": "Seluar", "th": "กางเกง", "sentence_ms": "Seluar ini terlalu panjang.", "sentence_th": "กางเกงตัวนี้ยาวเกินไป"}, {"no": "163", "ms": "Kasut", "th": "รองเท้า", "sentence_ms": "Kasut saya berwarna hitam.", "sentence_th": "รองเท้าของฉันสีดำ"}, {"no": "164", "ms": "Tudung", "th": "ผ้าคลุมศีรษะ", "sentence_ms": "Tudung itu cantik.", "sentence_th": "ผ้าคลุมศีรษะนั้นสวยงาม"}, {"no": "165", "ms": "Beg", "th": "กระเป๋า", "sentence_ms": "Beg saya ada di atas meja.", "sentence_th": "กระเป๋าของฉันอยู่บนโต๊ะ"}, {"no": "166", "ms": "Buku", "th": "หนังสือ", "sentence_ms": "Saya mahu membeli buku.", "sentence_th": "ฉันอยากซื้อหนังสือ"}, {"no": "167", "ms": "Pensel", "th": "ดินสอ", "sentence_ms": "Pensel saya patah.", "sentence_th": "ดินสอของฉันหัก"}, {"no": "168", "ms": "Pen", "th": "ปากกา", "sentence_ms": "Saya memerlukan sebatang pen.", "sentence_th": "ฉันต้องการปากกาหนึ่งด้าม"}, {"no": "169", "ms": "Wang tunai", "th": "เงินสด", "sentence_ms": "Saya membayar dengan wang tunai.", "sentence_th": "ฉันจ่ายด้วยเงินสด"}, {"no": "170", "ms": "Kad", "th": "บัตร", "sentence_ms": "Saya bayar menggunakan kad.", "sentence_th": "ฉันจ่ายโดยใช้บัตร"}, {"no": "171", "ms": "Resit", "th": "ใบเสร็จ", "sentence_ms": "Boleh saya dapatkan resit?", "sentence_th": "ขอใบเสร็จรับเงินได้ไหม?"}, {"no": "172", "ms": "Baki", "th": "เงินทอน/ยอดคงเหลือ", "sentence_ms": "Ini baki awak.", "sentence_th": "นี่คือเงินทอนของคุณ"}, {"no": "173", "ms": "Cukup", "th": "เพียงพอ", "sentence_ms": "Wang saya tidak cukup.", "sentence_th": "เงินของฉันไม่พอ"}, {"no": "174", "ms": "Kurang", "th": "น้อย/ขาด", "sentence_ms": "Wang ini masih kurang.", "sentence_th": "เงินนี้ยังขาดอยู่อีกนิดหน่อย"}, {"no": "175", "ms": "Lebih", "th": "มากกว่า/เกิน", "sentence_ms": "Harga ini lebih murah.", "sentence_th": "ราคานี้ถูกกว่า"}, {"no": "176", "ms": "Pilih", "th": "เลือก", "sentence_ms": "Saya mahu pilih yang ini.", "sentence_th": "ฉันอยากเลือกอันนี้"}, {"no": "177", "ms": "Cuba", "th": "ลอง", "sentence_ms": "Boleh saya cuba baju ini?", "sentence_th": "ขอฉันลองเสื้อตัวนี้ได้ไหม?"}, {"no": "178", "ms": "Saiz", "th": "ขนาด", "sentence_ms": "Ada saiz yang lebih besar?", "sentence_th": "มีขนาดใหญ่กว่านี้ไหม?"}, {"no": "179", "ms": "Warna", "th": "สี", "sentence_ms": "Saya suka warna biru.", "sentence_th": "ฉันชอบสีน้ำเงิน/สีฟ้า"}, {"no": "180", "ms": "Subjek", "th": "วิชา", "sentence_ms": "Subjek ini menarik.", "sentence_th": "วิชานี้น่าสนใจ"}, {"no": "181", "ms": "Pelajaran", "th": "บทเรียน/การเรียน", "sentence_ms": "Pelajaran hari ini mudah.", "sentence_th": "บทเรียนวันนี้ง่าย"}, {"no": "182", "ms": "Tugasan", "th": "งานที่ได้รับมอบหมาย", "sentence_ms": "Saya perlu menyiapkan tugasan.", "sentence_th": "ฉันต้องทำรายงาน/งานที่ได้รับมอบหมายให้เสร็จ"}, {"no": "183", "ms": "Kerja rumah", "th": "การบ้าน", "sentence_ms": "Saya membuat kerja rumah.", "sentence_th": "ฉันกำลังทำการบ้าน"}, {"no": "184", "ms": "Peperiksaan", "th": "การสอบ", "sentence_ms": "Peperiksaan bermula minggu depan.", "sentence_th": "การสอบจะเริ่มขึ้นในสัปดาห์หน้า"}, {"no": "185", "ms": "Soalan", "th": "คำถาม/ข้อสอบ", "sentence_ms": "Saya tidak faham soalan ini.", "sentence_th": "ฉันไม่เข้าใจคำถามนี้"}, {"no": "186", "ms": "Jawapan", "th": "คำตอบ", "sentence_ms": "Jawapan saya betul.", "sentence_th": "คำตอบของฉันถูกต้อง"}, {"no": "187", "ms": "Buku teks", "th": "หนังสือเรียน", "sentence_ms": "Saya membawa buku teks.", "sentence_th": "ฉันพกหนังสือเรียนมา"}, {"no": "188", "ms": "Nota", "th": "โน้ต/บันทึก", "sentence_ms": "Saya membaca nota sebelum peperiksaan.", "sentence_th": "ฉันอ่านสรุปโน้ตก่อนการสอบ"}, {"no": "189", "ms": "Pensyarah", "th": "อาจารย์มหาวิทยาลัย", "sentence_ms": "Pensyarah masuk ke kelas.", "sentence_th": "อาจารย์เข้ามาในห้องเรียน"}, {"no": "190", "ms": "Fakulti", "th": "คณะ", "sentence_ms": "Saya belajar di fakulti ini.", "sentence_th": "ฉันเรียนที่คณะนี้"}, {"no": "191", "ms": "Program", "th": "สาขา/หลักสูตร", "sentence_ms": "Saya mengikuti program bahasa Melayu.", "sentence_th": "ฉันเรียนหลักสูตรภาษามลายู"}, {"no": "192", "ms": "Kumpulan", "th": "กลุ่ม", "sentence_ms": "Saya berada dalam satu kumpulan.", "sentence_th": "ฉันอยู่ในกลุ่มเดียวกัน"}, {"no": "193", "ms": "Pembentangan", "th": "การนำเสนอ", "sentence_ms": "Kami ada pembentangan esok.", "sentence_th": "พวกเรามีการนำเสนอผลงานพรุ่งนี้"}, {"no": "194", "ms": "Projek", "th": "โครงงาน", "sentence_ms": "Projek ini dilakukan secara berkumpulan.", "sentence_th": "โปรเจกต์นี้ทำเป็นกลุ่ม"}, {"no": "195", "ms": "Markah", "th": "คะแนน", "sentence_ms": "Saya mendapat markah yang baik.", "sentence_th": "ฉันได้คะแนนดี"}, {"no": "196", "ms": "Gred", "th": "เกรด", "sentence_ms": "Gred saya semakin baik.", "sentence_th": "เกรดของฉันดีขึ้นเรื่อยๆ"}, {"no": "197", "ms": "Makmal", "th": "ห้องปฏิบัติการ", "sentence_ms": "Pelajar berada di makmal.", "sentence_th": "นักศึกษายังอยู่ในห้องแล็บ"}, {"no": "198", "ms": "Komputer", "th": "คอมพิวเตอร์", "sentence_ms": "Saya menggunakan komputer.", "sentence_th": "ฉันใช้คอมพิวเตอร์"}, {"no": "199", "ms": "Telefon", "th": "โทรศัพท์", "sentence_ms": "Telefon saya ada di dalam beg.", "sentence_th": "โทรศัพท์ของฉันอยู่ในกระเป๋า"}, {"no": "200", "ms": "Internet", "th": "อินเทอร์เน็ต", "sentence_ms": "Saya menggunakan internet untuk belajar.", "sentence_th": "ฉันใช้อินเทอร์เน็ตในการเรียน"}, {"no": "201", "ms": "Rakan sekelas", "th": "เพื่อนร่วมชั้น", "sentence_ms": "Rakan sekelas saya sangat baik.", "sentence_th": "เพื่อนร่วมชั้นของฉันใจดีมาก"}, {"no": "202", "ms": "Hadir", "th": "เข้าเรียน/เข้าร่วม", "sentence_ms": "Saya hadir ke kelas hari ini.", "sentence_th": "วันนี้ฉันเข้าเรียน"}, {"no": "203", "ms": "Cuti", "th": "วันหยุด", "sentence_ms": "Saya balik kampung semasa cuti.", "sentence_th": "ฉันกลับบ้านเกิดในช่วงวันหยุด"}, {"no": "204", "ms": "Tamat", "th": "เสร็จสิ้น/จบ", "sentence_ms": "Kelas sudah tamat.", "sentence_th": "คาบเรียนจบลงแล้ว"}, {"no": "205", "ms": "Mula", "th": "เริ่ม", "sentence_ms": "Kelas akan mula sebentar lagi.", "sentence_th": "คาบเรียนกำลังจะเริ่มในอีกสักครู่"}, {"no": "206", "ms": "Suka", "th": "ชอบ", "sentence_ms": "Saya suka belajar bahasa Melayu.", "sentence_th": "ฉันชอบเรียนภาษามลายู"}, {"no": "207", "ms": "Tidak suka", "th": "ไม่ชอบ", "sentence_ms": "Saya tidak suka makanan pedas.", "sentence_th": "ฉันไม่ชอบอาหารเผ็ด"}, {"no": "208", "ms": "Sayang", "th": "รัก/เอ็นดู", "sentence_ms": "Saya sayang keluarga saya.", "sentence_th": "ฉันรักครอบครัวของฉัน"}, {"no": "209", "ms": "Gembira", "th": "มีความสุข", "sentence_ms": "Saya gembira hari ini.", "sentence_th": "วันนี้ฉันมีความสุข"}, {"no": "210", "ms": "Sedih", "th": "เศร้า", "sentence_ms": "Dia berasa sedih.", "sentence_th": "เขารู้สึกเศร้าใจ"}, {"no": "211", "ms": "Marah", "th": "โกรธ", "sentence_ms": "Jangan marah kepada saya.", "sentence_th": "อย่าโกรธฉันเลยนะ"}, {"no": "212", "ms": "Takut", "th": "กลัว", "sentence_ms": "Adik takut kepada anjing.", "sentence_th": "น้องกลัวสุนัข"}, {"no": "213", "ms": "Risau", "th": "กังวล", "sentence_ms": "Saya risau tentang peperiksaan.", "sentence_th": "ฉันกังวลเกี่ยวกับการสอบ"}, {"no": "214", "ms": "Malu", "th": "อาย", "sentence_ms": "Dia malu untuk bercakap.", "sentence_th": "เขาอายที่จะพูด"}, {"no": "215", "ms": "Penat", "th": "เหนื่อย", "sentence_ms": "Saya sangat penat hari ini.", "sentence_th": "วันนี้ฉันเหนื่อยมาก"}, {"no": "216", "ms": "Sakit", "th": "เจ็บ/ป่วย", "sentence_ms": "Kepala saya sakit.", "sentence_th": "ฉันปวดหัว"}, {"no": "217", "ms": "Lapar", "th": "หิว", "sentence_ms": "Saya lapar sekarang.", "sentence_th": "ตอนนี้ฉันหิวแล้ว"}, {"no": "218", "ms": "Dahaga", "th": "กระหาย", "sentence_ms": "Saya berasa dahaga.", "sentence_th": "ฉันรู้สึกกระหายน้ํา"}, {"no": "219", "ms": "Bosan", "th": "เบื่อ", "sentence_ms": "Saya bosan duduk di rumah.", "sentence_th": "ฉันเบื่อกับการนั่ง่อยู่บ้าน"}, {"no": "220", "ms": "Sibuk", "th": "ยุ่ง", "sentence_ms": "Saya sibuk hari ini.", "sentence_th": "วันนี้ฉันยุ่งมาก"}, {"no": "221", "ms": "Senang", "th": "ง่าย/สบายใจ", "sentence_ms": "Soalan ini senang.", "sentence_th": "คำถามนี้ง่าย"}, {"no": "222", "ms": "Susah", "th": "ยาก", "sentence_ms": "Pelajaran ini susah.", "sentence_th": "บทเรียนนี้ยาก"}, {"no": "223", "ms": "Cantik", "th": "สวย", "sentence_ms": "Baju awak cantik.", "sentence_th": "เสื้อของคุณสวยจัง"}, {"no": "224", "ms": "Bagus", "th": "ดี", "sentence_ms": "Kerja awak sangat bagus.", "sentence_th": "ผลงานของคุณดีมาก"}, {"no": "225", "ms": "Menarik", "th": "น่าสนใจ", "sentence_ms": "Cerita itu sangat menarik.", "sentence_th": "เรื่องราวนั้นน่าสนใจมาก"}, {"no": "226", "ms": "Penting", "th": "สำคัญ", "sentence_ms": "Masa sangat penting.", "sentence_th": "เวลาเป็นสิ่งสำคัญมาก"}, {"no": "227", "ms": "Setuju", "th": "เห็นด้วย", "sentence_ms": "Saya setuju dengan pendapat awak.", "sentence_th": "ฉันเห็นด้วยกับความคิดเห็นของคุณ"}, {"no": "228", "ms": "Tidak setuju", "th": "ไม่เห็นด้วย", "sentence_ms": "Saya tidak setuju dengan cadangan itu.", "sentence_th": "ฉันไม่เห็นด้วยกับข้อเสนอนั้น"}, {"no": "229", "ms": "Pendapat", "th": "ความคิดเห็น", "sentence_ms": "Apakah pendapat awak?", "sentence_th": "คุณมีความคิดเห็นอย่างไร?"}, {"no": "230", "ms": "Harap", "th": "หวัง", "sentence_ms": "Saya harap awak berjaya.", "sentence_th": "ฉันหวังว่าคุณจะประสบความสำเร็จ"}, {"no": "231", "ms": "Ingat", "th": "จำ/นึกได้", "sentence_ms": "Saya ingat nama awak.", "sentence_th": "ฉันจำชื่อของคุณได้"}, {"no": "232", "ms": "Lupa", "th": "ลืม", "sentence_ms": "Saya lupa membawa buku.", "sentence_th": "ฉันลืมหยิบหนังสือมา"}, {"no": "233", "ms": "Percaya", "th": "เชื่อ", "sentence_ms": "Saya percaya kepada awak.", "sentence_th": "ฉันเชื่อใจคุณนะ"}, {"no": "234", "ms": "Sabar", "th": "อดทน", "sentence_ms": "Kita perlu sabar.", "sentence_th": "พวกเราต้องอดทนไว้"}, {"no": "235", "ms": "Meja", "th": "โต๊ะ", "sentence_ms": "Buku ada di atas meja.", "sentence_th": "หนังสือวางอยู่บนโต๊ะ"}, {"no": "236", "ms": "Kerusi", "th": "เก้าอี้", "sentence_ms": "Saya duduk di atas kerusi.", "sentence_th": "ฉันนั่งอยู่บนเก้าอี้"}, {"no": "237", "ms": "Katil", "th": "เตียง", "sentence_ms": "Saya tidur di atas katil.", "sentence_th": "ฉันนอนบนเตียง"}, {"no": "238", "ms": "Almari", "th": "ตู้เสื้อผ้า", "sentence_ms": "Baju saya ada dalam almari.", "sentence_th": "เสื้อผ้าของฉันอยู่ในตู้เสื้อผ้า"}, {"no": "239", "ms": "Pintu", "th": "ประตู", "sentence_ms": "Tolong tutup pintu.", "sentence_th": "กรุณาปิดประตูด้วย"}, {"no": "240", "ms": "Tingkap", "th": "หน้าต่าง", "sentence_ms": "Buka tingkap itu.", "sentence_th": "เปิดหน้าต่างบานนั้นสิ"}, {"no": "241", "ms": "Kipas", "th": "พัดลม", "sentence_ms": "Kipas sedang berpusing.", "sentence_th": "พัดลมกำลังหมุนอยู่"}, {"no": "242", "ms": "Lampu", "th": "ไฟ/โคมไฟ", "sentence_ms": "Tolong tutup lampu.", "sentence_th": "ช่วยปิดไฟหน่อย"}, {"no": "243", "ms": "Televisyen", "th": "โทรทัศน์", "sentence_ms": "Saya menonton televisyen.", "sentence_th": "ฉันกำลังดูทีวี"}, {"no": "244", "ms": "Peti sejuk", "th": "ตู้เย็น", "sentence_ms": "Susu ada di dalam peti sejuk.", "sentence_th": "นมอยู่ในตู้เย็น"}, {"no": "245", "ms": "Pinggan", "th": "จาน", "sentence_ms": "Letakkan makanan di atas pinggan.", "sentence_th": "วางอาหารไว้บนจาน"}, {"no": "246", "ms": "Cawan", "th": "ถ้วย", "sentence_ms": "Saya minum teh dalam cawan.", "sentence_th": "ฉันดื่มชาในถ้วย"}, {"no": "247", "ms": "Sudu", "th": "ช้อน", "sentence_ms": "Saya makan dengan sudu.", "sentence_th": "ฉันทานอาหารด้วยช้อน"}, {"no": "248", "ms": "Garpu", "th": "ส้อม", "sentence_ms": "Saya menggunakan garpu untuk makan.", "sentence_th": "ฉันใช้ส้อมในการกิน"}, {"no": "249", "ms": "Pisau", "th": "มีด", "sentence_ms": "Pisau itu ada di dapur.", "sentence_th": "มีดเล่มนั้นอยู่ในครัว"}, {"no": "250", "ms": "Tuala", "th": "ผ้าเช็ดตัว", "sentence_ms": "Tuala saya sudah kering.", "sentence_th": "ผ้าเช็ดตัวของฉันแห้งแล้ว"}, {"no": "251", "ms": "Sabun", "th": "สบู่", "sentence_ms": "Saya menggunakan sabun.", "sentence_th": "ฉันใช้สบู่"}, {"no": "252", "ms": "Berus gigi", "th": "แปรงสีฟัน", "sentence_ms": "Saya menggunakan berus gigi setiap pagi.", "sentence_th": "ฉันใช้แปรงสีฟันทุกเช้า"}, {"no": "253", "ms": "Ubat gigi", "th": "ยาสีฟัน", "sentence_ms": "Ubat gigi saya hampir habis.", "sentence_th": "ยาสีฟันของฉันใกล้จะหมดแล้ว"}, {"no": "254", "ms": "Cermin", "th": "กระจก", "sentence_ms": "Saya melihat wajah di cermin.", "sentence_th": "ฉันส่องหน้าตัวเองในกระจก"}, {"no": "255", "ms": "Kunci", "th": "กุญแจ", "sentence_ms": "Di mana kunci rumah?", "sentence_th": "กุญแจบ้านไม่อยู่ไหน?"}, {"no": "256", "ms": "Telefon bimbit", "th": "โทรศัพท์มือถือ", "sentence_ms": "Saya menggunakan telefon bimbit.", "sentence_th": "ฉันใช้โทรศัพท์มือถือ"}, {"no": "257", "ms": "Pengecas", "th": "ที่ชาร์จ", "sentence_ms": "Saya lupa membawa pengecas.", "sentence_th": "ฉันลืมนำสายชาร์จมา"}, {"no": "258", "ms": "Payung", "th": "ร่ม", "sentence_ms": "Saya membawa payung kerana hujan.", "sentence_th": "ฉันพกร่มมาเพราะฝนตก"}, {"no": "259", "ms": "Jam tangan", "th": "นาฬิกาข้อมือ", "sentence_ms": "Jam tangan saya baharu.", "sentence_th": "นาฬิกาข้อมือของฉันเรือนใหม่"}, {"no": "260", "ms": "Dompet", "th": "กระเป๋าสตางค์", "sentence_ms": "Dompet saya ada dalam beg.", "sentence_th": "กระเป๋าสตางค์ของฉันอยู่ในกระเป๋า"}, {"no": "261", "ms": "Botol", "th": "ขวด", "sentence_ms": "Botol air saya kosong.", "sentence_th": "ขวดน้ำของฉันว่างเปล่า (ไม่มีน้ำ)"}, {"no": "262", "ms": "Beg plastik", "th": "ถุงพลาสติก", "sentence_ms": "Tolong masukkan barang dalam beg plastik.", "sentence_th": "ช่วยใส่ของลงในถุงพลาสติกให้หน่อย"}, {"no": "263", "ms": "Kain", "th": "ผ้า", "sentence_ms": "Kain itu sangat lembut.", "sentence_th": "ผ้าผืนนั้นนุ่มมาก"}, {"no": "264", "ms": "Buka", "th": "เปิด", "sentence_ms": "Tolong buka pintu.", "sentence_th": "กรุณาเปิดประตูหน่อย"}, {"no": "265", "ms": "Tutup", "th": "ปิด", "sentence_ms": "Sila tutup tingkap.", "sentence_th": "โปรดปิดหน้าต่าง"}, {"no": "266", "ms": "Ambil", "th": "หยิบ/เอา", "sentence_ms": "Tolong ambil buku itu.", "sentence_th": "กรุณาหยิบหนังสือเล่มนั้นให้หน่อย"}, {"no": "267", "ms": "Letak", "th": "วาง", "sentence_ms": "Letak beg di atas meja.", "sentence_th": "วางกระเป๋าไว้บนโต๊ะ"}, {"no": "268", "ms": "Bawa", "th": "นำ/ถือ/พา", "sentence_ms": "Saya bawa buku ke kelas.", "sentence_th": "ฉันถือ/พกหนังสือไปห้องเรียน"}, {"no": "269", "ms": "Beri", "th": "ให้", "sentence_ms": "Tolong beri saya pen itu.", "sentence_th": "โปรดยื่นปากกาด้ามนั้นให้ฉันที"}, {"no": "270", "ms": "Dapat", "th": "ได้รับ/ได้", "sentence_ms": "Saya dapat hadiah daripada kawan.", "sentence_th": "ฉันได้รับของขวัญจากเพื่อน"}, {"no": "271", "ms": "Cari", "th": "หา", "sentence_ms": "Saya sedang cari kunci.", "sentence_th": "ฉันกำลังหากุญแจอยู่"}, {"no": "272", "ms": "Hilang", "th": "หาย", "sentence_ms": "Telefon saya hilang.", "sentence_th": "โทรศัพท์ของฉันหาย"}, {"no": "273", "ms": "Simpan", "th": "เก็บ", "sentence_ms": "Simpan buku ini di dalam beg.", "sentence_th": "เก็บหนังสือเล่มนี้ไว้ในกระเป๋า"}, {"no": "274", "ms": "Hantar", "th": "ส่ง", "sentence_ms": "Saya hantar tugasan hari ini.", "sentence_th": "วันนี้ฉันส่งงานที่ได้รับมอบหมาย"}, {"no": "275", "ms": "Terima", "th": "รับ/ได้รับ", "sentence_ms": "Saya sudah terima mesej awak.", "sentence_th": "ฉันได้รับข้อความของคุณแล้วนะ"}, {"no": "276", "ms": "Telefon", "th": "โทรศัพท์/โทร", "sentence_ms": "Saya akan telefon ibu nanti.", "sentence_th": "เดี๋ยวฉันจะโทรหาแม่"}, {"no": "277", "ms": "Mesej", "th": "ข้อความ", "sentence_ms": "Saya hantar mesej kepada kawan.", "sentence_th": "ฉันส่งข้อความหาเพื่อน"}, {"no": "278", "ms": "Balas", "th": "ตอบกลับ", "sentence_ms": "Tolong balas mesej saya.", "sentence_th": "ช่วยตอบข้อความฉันด้วย"}, {"no": "279", "ms": "Kongsi", "th": "แบ่งปัน/แชร์", "sentence_ms": "Saya kongsi gambar itu dengan kawan.", "sentence_th": "ฉันแชร์รูปภาพนั้นให้เพื่อนดู"}, {"no": "280", "ms": "Ikut", "th": "ตาม/ไปด้วย", "sentence_ms": "Boleh saya ikut awak?", "sentence_th": "ฉันขอไปด้วยได้ไหม?"}, {"no": "281", "ms": "Masuk", "th": "เข้า", "sentence_ms": "Sila masuk ke dalam kelas.", "sentence_th": "เชิญเข้าห้องเรียนครับ/ค่ะ"}, {"no": "282", "ms": "Keluar", "th": "ออก", "sentence_ms": "Jangan keluar sekarang.", "sentence_th": "อย่าเพิ่งออกไปตอนนี้"}, {"no": "283", "ms": "Duduk", "th": "นั่ง", "sentence_ms": "Sila duduk di sini.", "sentence_th": "เชิญนั่งตรงนี้ครับ/ค่ะ"}, {"no": "284", "ms": "Berdiri", "th": "ยืน", "sentence_ms": "Sila berdiri di hadapan kelas.", "sentence_th": "กรุณายืนขึ้นที่หน้าชั้นเรียน"}, {"no": "285", "ms": "Senyum", "th": "ยิ้ม", "sentence_ms": "Tolong senyum untuk gambar.", "sentence_th": "ยิ้มหน่อยนะสำหรับถ่ายรูป"}, {"no": "286", "ms": "Bantu", "th": "ช่วยเหลือ", "sentence_ms": "Kawan saya membantu saya.", "sentence_th": "เพื่อนของฉันคอยช่วยเหลือฉัน"}, {"no": "287", "ms": "Beritahu", "th": "บอก/แจ้ง", "sentence_ms": "Tolong beritahu saya jika awak datang.", "sentence_th": "โปรดบอกฉันด้วยหากคุณจะมา"}, {"no": "288", "ms": "Selamat tinggal", "th": "ลาก่อน", "sentence_ms": "Selamat tinggal, jumpa lagi.", "sentence_th": "ลาก่อน แล้วพบกันใหม่นะ"}, {"no": "289", "ms": "Tunggu sebentar", "th": "รอสักครู่", "sentence_ms": "Tunggu sebentar, saya datang.", "sentence_th": "รอสักครู่ เดี๋ยวฉันไป"}, {"no": "290", "ms": "Sekejap", "th": "สักครู่/เดี๋ยวเดียว", "sentence_ms": "Tunggu sekejap.", "sentence_th": "รอแป๊บนึงนะ"}, {"no": "291", "ms": "Cepat", "th": "เร็ว", "sentence_ms": "Sila datang cepat.", "sentence_th": "กรุณามาเร็วๆ นะ"}, {"no": "292", "ms": "Perlahan", "th": "ช้าๆ", "sentence_ms": "Cakap perlahan, sila.", "sentence_th": "โปรดพูดช้าๆ หน่อยครับ/ค่ะ"}, {"no": "293", "ms": "Di mana", "th": "ที่ไหน", "sentence_ms": "Di mana awak tinggal?", "sentence_th": "คุณอาศัยอยู่ที่ไหน?"}, {"no": "294", "ms": "Ke mana", "th": "ไปไหน", "sentence_ms": "Awak hendak pergi ke mana?", "sentence_th": "คุณกำลังจะไปไหน?"}, {"no": "295", "ms": "Dari mana", "th": "มาจากไหน", "sentence_ms": "Awak datang dari mana?", "sentence_th": "คุณมาจากไหน?"}, {"no": "296", "ms": "Apa", "th": "อะไร", "sentence_ms": "Apa yang awak buat?", "sentence_th": "คุณกำลังทำอะไรอยู่?"}, {"no": "297", "ms": "Siapa", "th": "ใคร", "sentence_ms": "Siapa nama awak?", "sentence_th": "คุณชื่ออะไร?"}, {"no": "298", "ms": "Bila", "th": "เมื่อไหร่", "sentence_ms": "Bila awak datang?", "sentence_th": "คุณจะมาเมื่อไหร่?"}, {"no": "299", "ms": "Mengapa", "th": "ทำไม", "sentence_ms": "Mengapa awak tidak datang?", "sentence_th": "ทำไมคุณถึงไม่มา?"}, {"no": "300", "ms": "Bagaimana", "th": "อย่างไร", "sentence_ms": "Bagaimana keadaan awak?", "sentence_th": "อาการ/สถานการณ์ของคุณเป็นอย่างไร\nบ้าง?"}];
+const FLASH = [{"no": "4", "ms": "Terima kasih", "th": "ขอบคุณ", "sentence_ms": "Terima kasih atas bantuan awak.", "sentence_th": "ขอบคุณสำหรับความช่วยเหลือของคุณ"}, {"no": "13", "ms": "Baik", "th": "ดี/ตกลง", "sentence_ms": "Baik, saya akan datang.", "sentence_th": "ตกลง ฉันจะไป"}, {"no": "14", "ms": "Betul", "th": "ถูกต้อง", "sentence_ms": "Jawapan awak betul.", "sentence_th": "คำตอบของคุณถูกต้อง"}, {"no": "16", "ms": "Faham", "th": "เข้าใจ", "sentence_ms": "Saya faham apa yang awak cakap.", "sentence_th": "ฉันเข้าใจสิ่งที่เธอพูด"}, {"no": "17", "ms": "Tahu", "th": "รู้", "sentence_ms": "Saya tahu tempat itu.", "sentence_th": "ฉันรู้จักสถานที่นั้น"}, {"no": "23", "ms": "Jumpa", "th": "พบ/เจอ", "sentence_ms": "Kita jumpa esok.", "sentence_th": "พรุ่งนี้เราเจอกัน"}, {"no": "24", "ms": "Cakap", "th": "พูด", "sentence_ms": "Tolong cakap perlahan sedikit.", "sentence_th": "กรุณาพูดช้าลงหน่อย"}, {"no": "36", "ms": "Mereka", "th": "พวกเขา", "sentence_ms": "Mereka sedang belajar.", "sentence_th": "พวกเขากำลังเรียนอยู่"}, {"no": "41", "ms": "Kawan", "th": "เพื่อน", "sentence_ms": "Ali ialah kawan saya.", "sentence_th": "อาลีเป็นเพื่อนของฉัน"}, {"no": "45", "ms": "Ibu", "th": "แม่", "sentence_ms": "Ibu sedang memasak.", "sentence_th": "แม่กำลังทำอาหารอยู่"}, {"no": "48", "ms": "Emak", "th": "แม่", "sentence_ms": "Emak membeli sayur.", "sentence_th": "แม่ซื้อผัก"}, {"no": "50", "ms": "Kakak", "th": "พี่สาว", "sentence_ms": "Kakak sedang membaca buku.", "sentence_th": "พี่สาวกำลังอ่านหนังสือ"}, {"no": "52", "ms": "Datuk", "th": "ปู่/ตา", "sentence_ms": "Datuk tinggal di kampung.", "sentence_th": "คุณปู่/คุณตา อาศัยอยู่ในหมู่บ้าน"}, {"no": "53", "ms": "Nenek", "th": "ย่า/ยาย", "sentence_ms": "Nenek memasak nasi.", "sentence_th": "คุณย่า/คุณยาย หุงข้าว"}, {"no": "58", "ms": "Saudara", "th": "ญาติ/พี่น้อง", "sentence_ms": "Saudara saya datang berkunjung.", "sentence_th": "ญาติของฉันมาเยี่ยม"}, {"no": "64", "ms": "Bilik air", "th": "ห้องน้ำ", "sentence_ms": "Bilik air ada di sebelah.", "sentence_th": "ห้องน้ำอยู่ข้างๆ"}, {"no": "72", "ms": "Hospital", "th": "โรงพยาบาล", "sentence_ms": "Dia pergi ke hospital.", "sentence_th": "เขาไปโรงพยาบาล"}, {"no": "80", "ms": "Kampung", "th": "หมู่บ้าน/ชนบท", "sentence_ms": "Nenek tinggal di kampung.", "sentence_th": "คุณยายอาศัยอยู่ในหมู่บ้านต่างจังหวัด"}, {"no": "82", "ms": "Stesen", "th": "สถานี", "sentence_ms": "Saya menunggu di stesen.", "sentence_th": "ฉันรออยู่ที่สถานี"}, {"no": "99", "ms": "Semalam", "th": "เมื่อวาน", "sentence_ms": "Saya pergi ke pasar semalam.", "sentence_th": "เมื่อวานฉันไปตลาด"}, {"no": "102", "ms": "Bulan", "th": "เดือน", "sentence_ms": "Bulan depan saya bercuti.", "sentence_th": "เดือนหน้าฉันจะไปพักร้อน/ลาหยุด"}, {"no": "111", "ms": "Makan", "th": "กิน", "sentence_ms": "Saya makan nasi.", "sentence_th": "ฉันกินข้าว"}, {"no": "112", "ms": "Minum", "th": "ดื่ม", "sentence_ms": "Saya minum air.", "sentence_th": "ฉันดื่มน้ำ"}, {"no": "113", "ms": "Tidur", "th": "นอน", "sentence_ms": "Saya tidur pada pukul sepuluh.", "sentence_th": "ฉันนอนตอนสี่ทุ่ม (สิบโมงคืน)"}, {"no": "115", "ms": "Bekerja", "th": "ทำงาน", "sentence_ms": "Ayah bekerja setiap hari.", "sentence_th": "พ่อทำงานทุกวัน"}, {"no": "117", "ms": "Bermain", "th": "เล่น", "sentence_ms": "Adik suka bermain bola.", "sentence_th": "น้องชอบเล่นฟุตบอล"}, {"no": "120", "ms": "Berjalan", "th": "เดิน", "sentence_ms": "Saya berjalan ke kelas.", "sentence_th": "ฉันเดินไปห้องเรียน"}, {"no": "126", "ms": "Daging", "th": "เนื้อ", "sentence_ms": "Dia tidak makan daging.", "sentence_th": "เขาไม่ทานเนื้อสัตว์/เนื้อวัว"}, {"no": "136", "ms": "Tembikai", "th": "แตงโม", "sentence_ms": "Kami makan tembikai.", "sentence_th": "พวกเราทานแตงโม"}, {"no": "141", "ms": "Garam", "th": "เกลือ", "sentence_ms": "Tolong tambah sedikit garam.", "sentence_th": "ช่วยเพิ่มเกลืออีกนิดหน่อย"}, {"no": "143", "ms": "Susu", "th": "นม", "sentence_ms": "Adik minum susu.", "sentence_th": "น้องดื่มนม"}, {"no": "149", "ms": "Manis", "th": "หวาน", "sentence_ms": "Kek ini terlalu manis.", "sentence_th": "เค้กชิ้นนี้หวานเกินไป"}, {"no": "151", "ms": "Beli", "th": "ซื้อ", "sentence_ms": "Saya mahu beli baju.", "sentence_th": "ฉันอยากซื้อเสื้อ"}, {"no": "173", "ms": "Cukup", "th": "เพียงพอ", "sentence_ms": "Wang saya tidak cukup.", "sentence_th": "เงินของฉันไม่พอ"}, {"no": "175", "ms": "Lebih", "th": "มากกว่า/เกิน", "sentence_ms": "Harga ini lebih murah.", "sentence_th": "ราคานี้ถูกกว่า"}, {"no": "177", "ms": "Cuba", "th": "ลอง", "sentence_ms": "Boleh saya cuba baju ini?", "sentence_th": "ขอฉันลองเสื้อตัวนี้ได้ไหม?"}, {"no": "184", "ms": "Peperiksaan", "th": "การสอบ", "sentence_ms": "Peperiksaan bermula minggu depan.", "sentence_th": "การสอบจะเริ่มขึ้นในสัปดาห์หน้า"}, {"no": "186", "ms": "Jawapan", "th": "คำตอบ", "sentence_ms": "Jawapan saya betul.", "sentence_th": "คำตอบของฉันถูกต้อง"}, {"no": "194", "ms": "Projek", "th": "โครงงาน", "sentence_ms": "Projek ini dilakukan secara berkumpulan.", "sentence_th": "โปรเจกต์นี้ทำเป็นกลุ่ม"}, {"no": "195", "ms": "Markah", "th": "คะแนน", "sentence_ms": "Saya mendapat markah yang baik.", "sentence_th": "ฉันได้คะแนนดี"}, {"no": "215", "ms": "Penat", "th": "เหนื่อย", "sentence_ms": "Saya sangat penat hari ini.", "sentence_th": "วันนี้ฉันเหนื่อยมาก"}, {"no": "217", "ms": "Lapar", "th": "หิว", "sentence_ms": "Saya lapar sekarang.", "sentence_th": "ตอนนี้ฉันหิวแล้ว"}, {"no": "230", "ms": "Harap", "th": "หวัง", "sentence_ms": "Saya harap awak berjaya.", "sentence_th": "ฉันหวังว่าคุณจะประสบความสำเร็จ"}, {"no": "236", "ms": "Kerusi", "th": "เก้าอี้", "sentence_ms": "Saya duduk di atas kerusi.", "sentence_th": "ฉันนั่งอยู่บนเก้าอี้"}, {"no": "259", "ms": "Jam tangan", "th": "นาฬิกาข้อมือ", "sentence_ms": "Jam tangan saya baharu.", "sentence_th": "นาฬิกาข้อมือของฉันเรือนใหม่"}, {"no": "275", "ms": "Terima", "th": "รับ/ได้รับ", "sentence_ms": "Saya sudah terima mesej awak.", "sentence_th": "ฉันได้รับข้อความของคุณแล้วนะ"}, {"no": "280", "ms": "Ikut", "th": "ตาม/ไปด้วย", "sentence_ms": "Boleh saya ikut awak?", "sentence_th": "ฉันขอไปด้วยได้ไหม?"}, {"no": "283", "ms": "Duduk", "th": "นั่ง", "sentence_ms": "Sila duduk di sini.", "sentence_th": "เชิญนั่งตรงนี้ครับ/ค่ะ"}, {"no": "288", "ms": "Selamat tinggal", "th": "ลาก่อน", "sentence_ms": "Selamat tinggal, jumpa lagi.", "sentence_th": "ลาก่อน แล้วพบกันใหม่นะ"}, {"no": "296", "ms": "Apa", "th": "อะไร", "sentence_ms": "Apa yang awak buat?", "sentence_th": "คุณกำลังทำอะไรอยู่?"}];
+
+// ---------- Tabs ----------
+document.querySelectorAll('.tab-btn').forEach(btn => {
+  btn.addEventListener('click', () => {
+    document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+    document.querySelectorAll('.panel').forEach(p => p.classList.remove('active'));
+    btn.classList.add('active');
+    document.getElementById(btn.dataset.tab).classList.add('active');
+  });
+});
+
+// ---------- Text to speech ----------
+let msVoice = null;
+function pickVoice() {
+  const voices = speechSynthesis.getVoices();
+  msVoice = voices.find(v => v.lang && v.lang.toLowerCase().startsWith('ms')) ||
+            voices.find(v => v.lang && v.lang.toLowerCase().startsWith('id')) ||
+            null;
+}
+if ('speechSynthesis' in window) {
+  pickVoice();
+  speechSynthesis.onvoiceschanged = pickVoice;
+}
+function speak(text) {
+  if (!('speechSynthesis' in window)) return;
+  try {
+    speechSynthesis.cancel();
+    const u = new SpeechSynthesisUtterance(text);
+    u.lang = msVoice ? msVoice.lang : 'ms-MY';
+    if (msVoice) u.voice = msVoice;
+    u.rate = 0.9;
+    speechSynthesis.speak(u);
+  } catch (e) { console.error('TTS error', e); }
+}
+
+// ---------- Dictionary ----------
+const wordListEl = document.getElementById('wordList');
+const searchInput = document.getElementById('searchInput');
+const countInfo = document.getElementById('countInfo');
+const emptyState = document.getElementById('emptyState');
+
+function escapeHtml(s) {
+  return s.replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+}
+
+function renderWordCard(w) {
+  const div = document.createElement('div');
+  div.className = 'word-card';
+  div.innerHTML = `
+    <div class="word-top">
+      <span class="word-no">#${w.no}</span>
+      <span class="word-ms">${escapeHtml(w.ms)}</span>
+      <button class="speak-btn" data-speak="${escapeHtml(w.ms)}">🔊</button>
+    </div>
+    <div class="word-th">${escapeHtml(w.th)}</div>
+    ${w.sentence_ms ? `<div class="word-sentence"><span class="ms-line">${escapeHtml(w.sentence_ms)}</span><br>${escapeHtml(w.sentence_th)}</div>` : ''}
+  `;
+  div.querySelector('.speak-btn').addEventListener('click', (e) => {
+    e.stopPropagation();
+    speak(w.ms);
+  });
+  return div;
+}
+
+function renderList(items) {
+  wordListEl.innerHTML = '';
+  if (items.length === 0) {
+    emptyState.style.display = 'block';
+  } else {
+    emptyState.style.display = 'none';
+    const frag = document.createDocumentFragment();
+    items.forEach(w => frag.appendChild(renderWordCard(w)));
+    wordListEl.appendChild(frag);
+  }
+  countInfo.textContent = `พบ ${items.length} จาก ${WORDS.length} คำ`;
+}
+
+function normalize(s) {
+  return (s || '').toLowerCase();
+}
+
+searchInput.addEventListener('input', () => {
+  const q = normalize(searchInput.value.trim());
+  if (!q) {
+    renderList(WORDS);
+    return;
+  }
+  const filtered = WORDS.filter(w =>
+    normalize(w.ms).includes(q) ||
+    normalize(w.th).includes(q) ||
+    normalize(w.sentence_ms).includes(q) ||
+    normalize(w.sentence_th).includes(q)
+  );
+  renderList(filtered);
+});
+
+renderList(WORDS);
+
+// ---------- Flashcards ----------
+let deck = FLASH.slice();
+let idx = 0;
+
+const flashcardEl = document.getElementById('flashcard');
+const fcMs = document.getElementById('fcMs');
+const fcTh = document.getElementById('fcTh');
+const fcSentMs = document.getElementById('fcSentMs');
+const fcSentTh = document.getElementById('fcSentTh');
+const fcNoFront = document.getElementById('fcNoFront');
+const fcNoBack = document.getElementById('fcNoBack');
+const progressText = document.getElementById('progressText');
+const prevBtn = document.getElementById('prevBtn');
+const nextBtn = document.getElementById('nextBtn');
+const shuffleBtn = document.getElementById('shuffleBtn');
+const fcSpeakFront = document.getElementById('fcSpeakFront');
+const fcSpeakBack = document.getElementById('fcSpeakBack');
+
+function renderCard() {
+  const w = deck[idx];
+  flashcardEl.classList.remove('flipped');
+  fcMs.textContent = w.ms;
+  fcTh.textContent = w.th;
+  fcSentMs.textContent = w.sentence_ms || '';
+  fcSentTh.textContent = w.sentence_th || '';
+  fcNoFront.textContent = '#' + w.no;
+  fcNoBack.textContent = '#' + w.no;
+  progressText.textContent = `${idx + 1} / ${deck.length}`;
+  prevBtn.disabled = idx === 0;
+  nextBtn.disabled = idx === deck.length - 1;
+}
+
+flashcardEl.addEventListener('click', (e) => {
+  if (e.target.closest('.flash-speak')) return;
+  flashcardEl.classList.toggle('flipped');
+});
+
+prevBtn.addEventListener('click', () => {
+  if (idx > 0) { idx--; renderCard(); }
+});
+nextBtn.addEventListener('click', () => {
+  if (idx < deck.length - 1) { idx++; renderCard(); }
+});
+shuffleBtn.addEventListener('click', () => {
+  for (let i = deck.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [deck[i], deck[j]] = [deck[j], deck[i]];
+  }
+  idx = 0;
+  renderCard();
+});
+fcSpeakFront.addEventListener('click', (e) => { e.stopPropagation(); speak(deck[idx].ms); });
+fcSpeakBack.addEventListener('click', (e) => { e.stopPropagation(); speak(deck[idx].ms); });
+
+renderCard();
+</script>
+</body>
+</html>
